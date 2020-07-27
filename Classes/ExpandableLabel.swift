@@ -227,8 +227,16 @@ extension ExpandableLabel {
 
     private func textReplaceWordWithLink(_ lineIndex: LineIndexTuple, text: NSAttributedString, linkName: NSAttributedString) -> NSAttributedString {
         let lineText = text.text(for: lineIndex.line)
+        var enumeratingOptions: NSString.EnumerationOptions = [.reverse]
+        switch textReplacementType {
+        case .character:
+            enumeratingOptions.insert(.byComposedCharacterSequences)
+        case .word:
+            enumeratingOptions.insert(.byWords)
+        }
+
         var lineTextWithLink = lineText
-        (lineText.string as NSString).enumerateSubstrings(in: NSRange(location: 0, length: lineText.length), options: [.byWords, .reverse]) { (word, subRange, enclosingRange, stop) -> Void in
+        (lineText.string as NSString).enumerateSubstrings(in: NSRange(location: 0, length: lineText.length), options: enumeratingOptions) { (word, subRange, enclosingRange, stop) -> Void in
             let lineTextWithLastWordRemoved = lineText.attributedSubstring(from: NSRange(location: 0, length: subRange.location))
             let lineTextWithAddedLink = NSMutableAttributedString(attributedString: lineTextWithLastWordRemoved)
             if let ellipsis = self.ellipsis {
@@ -337,7 +345,15 @@ extension ExpandableLabel {
 
     private func spiltIntoWords(str: NSString) -> [String] {
         var strings: [String] = []
-        str.enumerateSubstrings(in: NSRange(location: 0, length: str.length), options: [.byWords, .reverse]) { (word, subRange, enclosingRange, stop) -> Void in
+        var enumeratingOptions: NSString.EnumerationOptions = [.reverse]
+        switch textReplacementType {
+        case .character:
+            enumeratingOptions.insert(.byComposedCharacterSequences)
+        case .word:
+            enumeratingOptions.insert(.byWords)
+        }
+
+        str.enumerateSubstrings(in: NSRange(location: 0, length: str.length), options: enumeratingOptions) { (word, subRange, enclosingRange, stop) -> Void in
             if let unwrappedWord = word {
                 strings.append(unwrappedWord)
             }
