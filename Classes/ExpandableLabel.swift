@@ -125,12 +125,16 @@ import UIKit
         super.init(frame: .zero)
     }
 
+    open var originalText: String?
+
     open override var text: String? {
         set(text) {
             if let text = text {
                 self.attributedText = NSAttributedString(string: text)
+                self.originalText = text
             } else {
                 self.attributedText = nil
+                self.originalText = nil
             }
         }
         get {
@@ -155,6 +159,12 @@ import UIKit
         get {
             return super.attributedText
         }
+    }
+
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+
+        self.text = originalText
     }
 
     open func setLessLinkWith(lessLink: String, attributes: [NSAttributedString.Key: AnyObject], position: NSTextAlignment?) {
